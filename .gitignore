@@ -36,7 +36,7 @@ Ports/iOSPort/nbproject/private/private.xml
 /vm/ByteCodeTranslator/dist/
 /vm/JavaAPI/build/
 /vm/JavaAPI/dist/
-Ports/iOSPort/nbproject/private/private.properties
+/Ports/iOSPort/nbproject/private/private.properties
 CodenameOne/build.xml
 CodenameOne/build.xml
-Ports/iOSPort/nbproject/private/private.properties
+/vm/ByteCodeTranslator/nbproject/project.properties

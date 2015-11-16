@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -418,6 +419,58 @@ public class ByteCodeTranslator {
 
             String bundleVersion = System.getProperty("bundleVersionNumber", appVersion);
             replaceInFile(templateInfoPlist, "com.codename1pkg", appPackageName, "${PRODUCT_NAME}", appDisplayName, "VERSION_VALUE", appVersion, "VERSION_BUNDLE_VALUE", bundleVersion);
+        } else if (output == OutputType.OUTPUT_TYPE_CSHARP) {
+            File root = new File(dest, "dist");
+            root.mkdirs();
+            System.out.println("Root is: " + root.getAbsolutePath());
+            File srcRoot = new File(root, appName);
+            srcRoot.mkdirs();
+            System.out.println("srcRoot is: " + srcRoot.getAbsolutePath());
+            b.execute(sources, srcRoot);
+            // TODO - native bindings like the ones below
+//            File cn1Globals = new File(srcRoot, "cn1_globals.h");
+//            copy(ByteCodeTranslator.class.getResourceAsStream("/cn1_globals.h"), new FileOutputStream(cn1Globals));
+//            File cn1GlobalsM = new File(srcRoot, "cn1_globals.m");
+//            copy(ByteCodeTranslator.class.getResourceAsStream("/cn1_globals.m"), new FileOutputStream(cn1GlobalsM));
+//            File nativeMethods = new File(srcRoot, "nativeMethods.m");
+//            copy(ByteCodeTranslator.class.getResourceAsStream("/nativeMethods.m"), new FileOutputStream(nativeMethods));
+            Parser.writeOutput(srcRoot);
+            File projectFile = new File(root, appName + ".sln");
+            copy(ByteCodeTranslator.class.getResourceAsStream("/template/windows/Project.sln"), new FileOutputStream(projectFile));
+            replaceInFile(projectFile, "##mainName##", appName);
+            String projectUUID = UUID.randomUUID().toString().toUpperCase();
+            replaceInFile(projectFile, "##projectUUID##", projectUUID);
+            String solutionUUID = UUID.randomUUID().toString().toUpperCase();
+            replaceInFile(projectFile, "##solutionUUID##", solutionUUID);
+            File mainPageFile = new File(srcRoot, "MainPage.xaml");
+            copy(ByteCodeTranslator.class.getResourceAsStream("/template/windows/project/MainPage.tpl.xaml"), new FileOutputStream(mainPageFile));
+            replaceInFile(mainPageFile, "##mainName##", appName);
+            File mainPageCsFile = new File(srcRoot, "MainPage.xaml.cs");
+            copy(ByteCodeTranslator.class.getResourceAsStream("/template/windows/project/MainPage.xaml.tpl.cs"), new FileOutputStream(mainPageCsFile));
+            replaceInFile(mainPageCsFile, "##mainName##", appName);
+            replaceInFile(mainPageCsFile, "##packageName##", appPackageName);
+            replaceInFile(mainPageCsFile, "##cn1User##", "local_build");
+            replaceInFile(mainPageCsFile, "##appVersion##", appVersion);
+            String keyUUID = UUID.randomUUID().toString().toLowerCase();
+            replaceInFile(mainPageCsFile, "##keyUUID##", keyUUID);
+            File appFile = new File(srcRoot, "App.xaml");
+            copy(ByteCodeTranslator.class.getResourceAsStream("/template/windows/project/App.tpl.xaml"), new FileOutputStream(appFile));
+            replaceInFile(appFile, "##mainName##", appName);
+            File appCsFile = new File(srcRoot, "App.xaml.cs");
+            copy(ByteCodeTranslator.class.getResourceAsStream("/template/windows/project/App.xaml.tpl.cs"), new FileOutputStream(appCsFile));
+            replaceInFile(appCsFile, "##mainName##", appName);
+            File packageAppxmanifestFile = new File(srcRoot, "Package.appxmanifest");
+            copy(ByteCodeTranslator.class.getResourceAsStream("/template/windows/project/Package.tpl.appxmanifest"), new FileOutputStream(packageAppxmanifestFile));
+            replaceInFile(packageAppxmanifestFile, "##mainName##", appName);
+            replaceInFile(packageAppxmanifestFile, "##displayName##", appDisplayName);
+            replaceInFile(packageAppxmanifestFile, "##cn1Vendor##", "unknown");
+            File mainFile = new File(srcRoot, "Main.cs");
+            copy(ByteCodeTranslator.class.getResourceAsStream("/template/windows/project/Main.tpl.cs"), new FileOutputStream(mainFile));
+            replaceInFile(mainFile, "##mainName##", appName);
+            replaceInFile(mainFile, "##packageName##", appPackageName);
+            // TODO - move to right folders
+            // TODO - native bindings
+            // TODO - .csproj
         } else {
             b.execute(sources, dest);
             Parser.writeOutput(dest);

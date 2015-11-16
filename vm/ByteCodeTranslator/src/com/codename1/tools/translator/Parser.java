@@ -421,7 +421,9 @@ public class Parser extends ClassVisitor {
         File[] mFiles = outputDirectory.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
-                return file.getName().endsWith(".m");
+                return 
+                    (file.getName().endsWith(".m") && ByteCodeTranslator.output == ByteCodeTranslator.OutputType.OUTPUT_TYPE_IOS) ||
+                    (file.getName().endsWith(".cs") && ByteCodeTranslator.output == ByteCodeTranslator.OutputType.OUTPUT_TYPE_CSHARP);
             }
         });
         nativeSources = new String[mFiles.length];
