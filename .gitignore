@@ -40,3 +40,5 @@ Ports/iOSPort/nbproject/private/private.xml
 CodenameOne/build.xml
 CodenameOne/build.xml
 /vm/ByteCodeTranslator/nbproject/project.properties
+/Ports/JavaSEWithSVGSupport/nbproject/private/
+/Ports/JavaSEWithSVGSupport/build/
